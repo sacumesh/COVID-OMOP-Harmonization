@@ -1,0 +1,74 @@
+# PostgreSQL + Apache Hop for the OMOP ETL project.
+#
+#   docker compose up -d               start PostgreSQL and Hop Web
+#   http://localhost:8080/ui           open Hop Web in the browser
+#   docker compose run --rm hop-run    run hop/main.hwf without the GUI
+#   docker compose down                stop everything (the database keeps its data)
+
+services:
+  # The database. Unchanged from the earlier file.
+  db:
+    image: postgres:16
+    container_name: omop_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-hop_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hop_pass}
+      POSTGRES_DB: ${DB_NAME:-analytics_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-hop_user} -d ${DB_NAME:-analytics_db}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Hop Web: the visual pipeline designer, used from the browser.
+  hop-web:
+    image: apache/hop-web:2.20.0
+    container_name: hop_web-ide
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      # 127.0.0.1 = this computer only, because Hop Web has no login by default.
+      # If port 8080 is taken, change the first 8080 (for example "127.0.0.1:8081:8080").
+      - "127.0.0.1:8080:8080"
+    environment:
+      # Registers the folder below as a Hop project every time the container starts.
+      HOP_PROJECT_NAME: omop-etl
+      HOP_PROJECT_FOLDER: /project
+      HOP_ENVIRONMENT_NAME: dev
+      HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS: /project/config/dev-env.json
+
+    volumes:
+      # Hop runs as user 501 inside the container. On Linux only, give that user the
+      # folder once before the first start:  sudo chown -R 501:501 hop
+      - ./hop:/project                  # pipelines, workflows and connections are saved here
+      - ./data/raw:/data/raw:ro         # the hospital CSV files, read-only
+      - hop_audit:/tmp/hop-web-audit    # remembers which project and files were open
+
+  # Runs one workflow or pipeline without the GUI, then stops.
+  # "docker compose up" does not start it. Use: docker compose run --rm hop-run
+  hop-run:
+    image: apache/hop:2.20.0
+    profiles: ["run"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOP_LOG_LEVEL: Basic
+      HOP_PROJECT_FOLDER: /project
+      HOP_PROJECT_NAME: omop-etl
+      HOP_ENVIRONMENT_NAME: dev
+      HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS: /project/config/dev-env.json
+      HOP_FILE_PATH: $${PROJECT_HOME}/workflows/main.hwf
+      HOP_RUN_CONFIG: local             # the local engine, already defined in the image
+    volumes:
+      - ./hop:/project
+      - ./data/raw:/data/raw:ro
+
+volumes:
+  pgdata:
+  hop_audit:
