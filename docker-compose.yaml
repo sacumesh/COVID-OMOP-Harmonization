@@ -45,8 +45,8 @@ services:
     volumes:
       # Hop runs as user 501 inside the container. On Linux only, give that user the
       # folder once before the first start:  sudo chown -R 501:501 hop
-      - ./hop:/project                  # pipelines, workflows and connections are saved here
-      - ./data/raw:/data/raw:ro         # the hospital CSV files, read-only
+      - ./hop:/project:z                  # pipelines, workflows and connections are saved here
+      - ./data/raw:/data/raw:ro,z         # the hospital CSV files, read-only
       - hop_audit:/tmp/hop-web-audit    # remembers which project and files were open
 
   # Runs one workflow or pipeline without the GUI, then stops.
@@ -66,8 +66,8 @@ services:
       HOP_FILE_PATH: $${PROJECT_HOME}/workflows/main.hwf
       HOP_RUN_CONFIG: local             # the local engine, already defined in the image
     volumes:
-      - ./hop:/project
-      - ./data/raw:/data/raw:ro
+      - ./hop:/project:z
+      - ./data/raw:/data/raw:ro,z
 
 volumes:
   pgdata:
