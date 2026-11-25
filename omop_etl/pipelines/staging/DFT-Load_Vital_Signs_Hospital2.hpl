@@ -20,7 +20,7 @@
     <created_user>-</created_user>
     <modified_user>-</modified_user>
     <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/25 12:42:38.790</modified_date>
+    <modified_date>2026/11/25 18:10:57.870</modified_date>
     <created_hop_version/>
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
@@ -200,7 +200,7 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>96</xloc>
+      <xloc>256</xloc>
       <yloc>144</yloc>
     </GUI>
     <partitioning>
@@ -229,7 +229,7 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>96</xloc>
+      <xloc>256</xloc>
       <yloc>304</yloc>
     </GUI>
     <partitioning>
@@ -305,7 +305,7 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>96</xloc>
+      <xloc>256</xloc>
       <yloc>464</yloc>
     </GUI>
     <partitioning>
