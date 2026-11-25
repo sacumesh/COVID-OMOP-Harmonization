@@ -1,0 +1,8 @@
+{
+  "auth_type": "TOKEN",
+  "virtualPath": "",
+  "provider": "GITHUB_CLOUD",
+  "name": "GitHub_Connection",
+  "api_base_url": "",
+  "token": "Encrypted 6768705f6a43316138326b4844663948794a7039637a6769f2fd9dbc20d4c38d8d3dfd7c8782a6fb"
+}
