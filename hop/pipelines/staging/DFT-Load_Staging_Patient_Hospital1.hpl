@@ -20,7 +20,7 @@
     <created_user>-</created_user>
     <modified_user>-</modified_user>
     <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/24 23:23:03.457</modified_date>
+    <modified_date>2026/11/25 17:04:16.987</modified_date>
     <created_hop_version/>
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
@@ -200,8 +200,8 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>96</xloc>
-      <yloc>144</yloc>
+      <xloc>304</xloc>
+      <yloc>128</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -229,8 +229,8 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>272</xloc>
-      <yloc>144</yloc>
+      <xloc>304</xloc>
+      <yloc>272</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -305,8 +305,8 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>496</xloc>
-      <yloc>144</yloc>
+      <xloc>304</xloc>
+      <yloc>416</yloc>
     </GUI>
     <partitioning>
       <method>none</method>

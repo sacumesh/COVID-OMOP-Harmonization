@@ -20,7 +20,7 @@
     <created_user>-</created_user>
     <modified_user>-</modified_user>
     <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/25 16:38:44.997</modified_date>
+    <modified_date>2026/11/25 17:15:58.203</modified_date>
     <created_hop_version/>
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
@@ -321,7 +321,7 @@
   <transform>
     <type>TableOutput</type>
     <name>DB_SRC-Staging_Laboratory_Hospital1</name>
-    <connection>OMOP_DB</connection>
+    <connection> OMOP_DB</connection>
     <schema>staging</schema>
     <table>sta_laboratory_hospital1</table>
     <commit>1000</commit>

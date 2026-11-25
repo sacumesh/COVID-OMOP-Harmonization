@@ -20,7 +20,7 @@
     <created_user>-</created_user>
     <modified_user>-</modified_user>
     <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/25 16:43:36.673</modified_date>
+    <modified_date>2026/11/25 17:22:04.349</modified_date>
     <created_hop_version/>
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
@@ -273,7 +273,7 @@
   <transform>
     <type>TableOutput</type>
     <name>DB_SRC-Staging_Laboratory_Hospital2</name>
-    <connection>OMOP_DB</connection>
+    <connection> OMOP_DB</connection>
     <schema>staging</schema>
     <table>sta_laboratory_hospital2</table>
     <commit>1000</commit>
@@ -366,29 +366,7 @@
       <enabled>Y</enabled>
     </hop>
   </order>
-  <notepads>
-    <notepad>
-      <note>DFT-Load_Staging_ Laboratory_Hospital1.hpl</note>
-      <markdown>Y</markdown>
-      <notetype>GENERAL</notetype>
-      <fontsize>-1</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
-      <xloc>597</xloc>
-      <yloc>796</yloc>
-      <width>32</width>
-      <height>32</height>
-    </notepad>
-  </notepads>
+  <notepads/>
   <attributes/>
   <transform_error_handling/>
 </pipeline>

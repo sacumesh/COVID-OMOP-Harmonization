@@ -20,7 +20,7 @@
     <created_user>-</created_user>
     <modified_user>-</modified_user>
     <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/25 09:45:08.063</modified_date>
+    <modified_date>2026/11/25 17:04:14.158</modified_date>
     <created_hop_version/>
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
@@ -403,9 +403,9 @@
       <bordercolorred>14</bordercolorred>
       <bordercolorgreen>58</bordercolorgreen>
       <bordercolorblue>90</bordercolorblue>
-      <xloc>597</xloc>
-      <yloc>796</yloc>
-      <width>32</width>
+      <xloc>192</xloc>
+      <yloc>784</yloc>
+      <width>448</width>
       <height>32</height>
     </notepad>
   </notepads>
