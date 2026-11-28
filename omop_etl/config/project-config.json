@@ -1,9 +1,22 @@
 {
-  "metadataBaseFolder" : "${PROJECT_HOME}/hop/metadata",
+  "metadataBaseFolder" : "${PROJECT_HOME}/omop_etl/metadata",
   "unitTestsBasePath" : "${PROJECT_HOME}",
   "dataSetsCsvFolder" : "${PROJECT_HOME}/datasets",
   "enforcingExecutionInHome" : true,
+  "autoExportMetadataFilename" : "metadata.json",
   "config" : {
-    "variables" : [ ]
+    "variables" : [ {
+      "name" : "SOURCE_DIR",
+      "value" : "${PROJECT_HOME}/data/source",
+      "description" : "Folder with the 15 hospital files, exactly as delivered"
+    }, {
+      "name" : "REFERENCE_DIR",
+      "value" : "${PROJECT_HOME}/data/reference",
+      "description" : "Folder with the reference CSV files kept by hand"
+    }, {
+      "name" : "VOCAB_DIR",
+      "value" : "${PROJECT_HOME}/data/athena_vocab",
+      "description" : "Folder with the Athena vocabulary files (CONCEPT.csv, ...), read by WF-load_vocabulary"
+    } ]
   }
 }
