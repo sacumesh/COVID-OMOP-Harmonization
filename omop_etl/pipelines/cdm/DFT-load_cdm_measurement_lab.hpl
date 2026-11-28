@@ -1,24 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
-    <capture_transform_performance>N</capture_transform_performance>
-    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
-    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <pipeline_status>-1</pipeline_status>
-    <parameters />
     <name>DFT-load_cdm_measurement_lab</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description>ods.lab_result -&gt; cdm.measurement</description>
+    <extended_description />
+    <pipeline_version />
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>0</pipeline_status>
+    <parameters />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/28 01:00:00.000</created_date>
-    <modified_date>2026/11/28 01:00:00.000</modified_date>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
     <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TableInput</type>
     <name>DB_SRC-ods_lab_result</name>
+    <description>Every lab result</description>
     <sql>SELECT
   source_site
 , order_number
@@ -32,6 +35,8 @@
 , value_number
 , unit_code
 , unit_code_system
+, _src_filename
+, _src_rownum
 FROM ods.lab_result
 </sql>
     <limit>0</limit>
@@ -48,7 +53,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>48</yloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -59,6 +64,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-person_id</name>
+    <description>person_id of the patient, from map.person_map</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -93,7 +99,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>160</yloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -104,6 +110,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-visit_occurrence_id</name>
+    <description>visit_occurrence_id of the episode, from map.visit_map (empty when there is no episode)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -144,7 +151,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>272</yloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -155,6 +162,7 @@ FROM ods.lab_result
   <transform>
     <type>Constant</type>
     <name>CST-measurement</name>
+    <description>Record type 32817 EHR</description>
     <fields>
       <field>
         <currency />
@@ -173,7 +181,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>384</yloc>
+      <yloc>512</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -184,6 +192,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-accepted_domain</name>
+    <description>The domain a concept must have: Measurement, or none when the test code is ambiguous in its order (map.lab_ambiguous_code)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -224,7 +233,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>496</yloc>
+      <yloc>624</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -235,6 +244,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-source_concept_id</name>
+    <description>The code's own concept (0 when it has none)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -269,7 +279,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>608</yloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -280,6 +290,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-measurement_concept_id</name>
+    <description>Standard concept of the accepted domain; anything else -&gt; 0 (code kept in the source value)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -320,7 +331,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>720</yloc>
+      <yloc>848</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -331,6 +342,7 @@ FROM ods.lab_result
   <transform>
     <type>DBLookup</type>
     <name>LKP-unit_concept_id</name>
+    <description>Unit concept from the reviewed unit rules (no unit sent -&gt; empty)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -365,7 +377,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>832</yloc>
+      <yloc>960</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -376,6 +388,7 @@ FROM ods.lab_result
   <transform>
     <type>SelectValues</type>
     <name>DCNV-time_format</name>
+    <description>Gives the time fields the HH:mm:ss format the Calculator needs</description>
     <fields>
       <select_unspecified>N</select_unspecified>
       <meta>
@@ -401,7 +414,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>944</yloc>
+      <yloc>1072</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -412,6 +425,7 @@ FROM ods.lab_result
   <transform>
     <type>Calculator</type>
     <name>CAL-datetimes</name>
+    <description>date + time -&gt; datetime (empty time = 00:00:00)</description>
     <calculation>
       <field_name>measurement_datetime</field_name>
       <calc_type>ADD_TIME_TO_DATE</calc_type>
@@ -432,7 +446,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>1056</yloc>
+      <yloc>1184</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -443,6 +457,7 @@ FROM ods.lab_result
   <transform>
     <type>Sequence</type>
     <name>SEQ-measurement_id</name>
+    <description>Next measurement_id from cdm.seq_measurement_id</description>
     <valuename>measurement_id</valuename>
     <use_database>Y</use_database>
     <connection>CONN-PG_OMOP</connection>
@@ -457,7 +472,7 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>1168</yloc>
+      <yloc>1296</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -468,6 +483,7 @@ FROM ods.lab_result
   <transform>
     <type>SelectValues</type>
     <name>DCNV-cdm_measurement</name>
+    <description>Renames to the cdm.measurement column names</description>
     <fields>
       <field>
         <name>measurement_id</name>
@@ -547,13 +563,31 @@ FROM ods.lab_result
         <length>-2</length>
         <precision>-2</precision>
       </field>
+      <field>
+        <name>source_site</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_filename</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_rownum</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>1280</yloc>
+      <yloc>1408</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -564,6 +598,7 @@ FROM ods.lab_result
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-cdm_measurement</name>
+    <description>Inserts into cdm.measurement (WF-load_cdm empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>cdm</schema>
     <table>measurement</table>
@@ -640,7 +675,121 @@ FROM ods.lab_result
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>1392</yloc>
+      <yloc>1520</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-cdm_measurement: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_cdm_measurement_lab</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-cdm_measurement</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>1520</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_cdm_load_reject</name>
+    <description>Writes the rejected rows of DB_DST-cdm_measurement with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>cdm_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
+      </field>
+      <field>
+        <column_name>source_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>source_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>1520</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -709,8 +858,55 @@ FROM ods.lab_result
       <to>DB_DST-cdm_measurement</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DB_DST-cdm_measurement</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_cdm_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
-  <notepads />
+  <notepads>
+    <notepad>
+      <note>DFT-load_cdm_measurement_lab
+ods.lab_result -&gt; cdm.measurement. Concept from map.code_map, only standard concepts of the Measurement domain,
+none for ambiguous test codes; unit from the reviewed unit rules.
+Refused rows go to adm.cdm_load_reject, with the file and line of the result.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>801</width>
+      <heigth>92</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
   <attributes />
-  <transform_error_handling />
+  <transform_error_handling>
+    <error>
+      <source_transform>DB_DST-cdm_measurement</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
 </pipeline>

@@ -1,29 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
+    <name>DFT-load_cdm_death</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>ods.patient (death date) -&gt; cdm.death</description>
+    <extended_description />
+    <pipeline_version />
     <capture_transform_performance>N</capture_transform_performance>
     <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
     <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <pipeline_status>-1</pipeline_status>
-    <parameters/>
-    <name>DFT-load_cdm_death</name>
-    <name_sync_with_filename>Y</name_sync_with_filename>
-    <description>ods.patient (death date) -> cdm.death</description>
+    <pipeline_status>0</pipeline_status>
+    <parameters />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/28 01:00:00.000</created_date>
-    <modified_date>2026/11/28 10:25:52.012</modified_date>
-    <created_hop_version/>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
+    <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TableInput</type>
     <name>DB_SRC-ods_patient_deaths</name>
+    <description>Patients with a death date</description>
     <sql>SELECT
   source_site
 , patient_number
 , death_date
 , death_time
+, _src_filename
+, _src_rownum
 FROM ods.patient
 WHERE death_date IS NOT NULL
 </sql>
@@ -31,29 +36,30 @@ WHERE death_date IS NOT NULL
     <execute_each_row>N</execute_each_row>
     <variables_active>N</variables_active>
     <connection>CONN-PG_OMOP</connection>
-    <lookup/>
-    <sql_from_file/>
+    <lookup />
+    <sql_from_file />
     <use_named_parameters>Y</use_named_parameters>
     <specify_fields>N</specify_fields>
     <validate_specified_fields>N</validate_specified_fields>
-    <fields/>
+    <fields />
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>48</yloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>DBLookup</type>
     <name>LKP-person_id</name>
+    <description>person_id of the patient, from map.person_map</description>
     <connection>CONN-PG_OMOP</connection>
-    <cache>N</cache>
+    <cache>Y</cache>
     <cache_size>0</cache_size>
     <cache_load_all>Y</cache_load_all>
     <lookup>
@@ -61,38 +67,24 @@ WHERE death_date IS NOT NULL
       <table>person_map</table>
       <key>
         <name>source_site</name>
-        <name2/>
-        <condition>=</condition>
         <field>source_site</field>
+        <condition>=</condition>
+        <name2 />
       </key>
       <key>
         <name>patient_number</name>
-        <name2/>
-        <condition>=</condition>
         <field>patient_number</field>
+        <condition>=</condition>
+        <name2 />
       </key>
       <value>
         <name>person_id</name>
         <rename>person_id</rename>
-        <default/>
+        <default />
         <type>Integer</type>
         <trim_type>none</trim_type>
       </value>
-      <value>
-        <name>source_site</name>
-        <rename>source_site</rename>
-        <default/>
-        <type>String</type>
-        <trim_type>none</trim_type>
-      </value>
-      <value>
-        <name>patient_number</name>
-        <rename>patient_number</rename>
-        <default/>
-        <type>String</type>
-        <trim_type>none</trim_type>
-      </value>
-      <orderby/>
+      <orderby />
       <fail_on_multiple>N</fail_on_multiple>
       <eat_row_on_failure>N</eat_row_on_failure>
     </lookup>
@@ -100,26 +92,27 @@ WHERE death_date IS NOT NULL
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>160</yloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>Constant</type>
     <name>CST-death</name>
+    <description>Record type 32817 EHR</description>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
-        <group/>
+        <currency />
+        <decimal />
+        <group />
         <nullif>32817</nullif>
         <name>death_type_concept_id</name>
         <type>Integer</type>
-        <format/>
+        <format />
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -129,35 +122,36 @@ WHERE death_date IS NOT NULL
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>272</yloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>SelectValues</type>
     <name>DCNV-time_format</name>
+    <description>Gives the time fields the HH:mm:ss format the Calculator needs</description>
     <fields>
       <select_unspecified>N</select_unspecified>
       <meta>
         <name>death_time</name>
-        <rename/>
+        <rename />
         <type>Date</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
+        <storage_type />
         <conversion_mask>HH:mm:ss</conversion_mask>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
     </fields>
@@ -165,30 +159,31 @@ WHERE death_date IS NOT NULL
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>384</yloc>
+      <yloc>512</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>Calculator</type>
     <name>CAL-datetimes</name>
+    <description>date + time -&gt; datetime (empty time = 00:00:00)</description>
     <calculation>
       <field_name>death_datetime</field_name>
       <calc_type>ADD_TIME_TO_DATE</calc_type>
       <field_a>death_date</field_a>
       <field_b>death_time</field_b>
-      <field_c/>
+      <field_c />
       <value_type>Date</value_type>
       <value_length>-1</value_length>
       <value_precision>-1</value_precision>
-      <conversion_mask/>
-      <decimal_symbol/>
-      <grouping_symbol/>
-      <currency_symbol/>
+      <conversion_mask />
+      <decimal_symbol />
+      <grouping_symbol />
+      <currency_symbol />
       <remove>N</remove>
     </calculation>
     <failIfNoFile>Y</failIfNoFile>
@@ -196,39 +191,58 @@ WHERE death_date IS NOT NULL
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>496</yloc>
+      <yloc>624</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>SelectValues</type>
     <name>DCNV-cdm_death</name>
+    <description>Renames to the cdm.death column names</description>
     <fields>
       <field>
         <name>person_id</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>death_date</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>death_datetime</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>death_type_concept_id</name>
-        <rename/>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>source_site</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_filename</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_rownum</name>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
@@ -238,17 +252,18 @@ WHERE death_date IS NOT NULL
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>608</yloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-cdm_death</name>
+    <description>Inserts into cdm.death (WF-load_cdm empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>cdm</schema>
     <table>death</table>
@@ -257,50 +272,159 @@ WHERE death_date IS NOT NULL
     <only_when_have_rows>N</only_when_have_rows>
     <ignore_errors>N</ignore_errors>
     <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
+    <partitioning_field />
     <partitioning_daily>N</partitioning_daily>
     <partitioning_monthly>Y</partitioning_monthly>
     <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
+    <tablename_field />
     <tablename_in_table>Y</tablename_in_table>
     <return_keys>N</return_keys>
-    <return_field/>
-    <specify_fields>Y</specify_fields>
-    <auto_update_table_structure>N</auto_update_table_structure>
-    <always_drop_and_recreate>N</always_drop_and_recreate>
-    <add_columns>N</add_columns>
-    <drop_columns>N</drop_columns>
-    <change_column_types>N</change_column_types>
+    <return_field />
     <fields>
       <field>
-        <stream_name>person_id</stream_name>
         <column_name>person_id</column_name>
+        <stream_name>person_id</stream_name>
       </field>
       <field>
-        <stream_name>death_date</stream_name>
         <column_name>death_date</column_name>
+        <stream_name>death_date</stream_name>
       </field>
       <field>
-        <stream_name>death_datetime</stream_name>
         <column_name>death_datetime</column_name>
+        <stream_name>death_datetime</stream_name>
       </field>
       <field>
-        <stream_name>death_type_concept_id</stream_name>
         <column_name>death_type_concept_id</column_name>
+        <stream_name>death_type_concept_id</stream_name>
       </field>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>720</yloc>
+      <yloc>848</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-cdm_death: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_cdm_death</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-cdm_death</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>848</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_cdm_load_reject</name>
+    <description>Writes the rejected rows of DB_DST-cdm_death with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>cdm_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
+      </field>
+      <field>
+        <column_name>source_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>source_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>848</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
   </transform>
   <order>
     <hop>
@@ -333,8 +457,54 @@ WHERE death_date IS NOT NULL
       <to>DB_DST-cdm_death</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DB_DST-cdm_death</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_cdm_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
-  <notepads/>
-  <attributes/>
-  <transform_error_handling/>
+  <notepads>
+    <notepad>
+      <note>DFT-load_cdm_death
+ods.patient (patients with a death date) -&gt; cdm.death.
+Refused rows go to adm.cdm_load_reject, with the file and line of the patient.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>570</width>
+      <heigth>74</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
+  <attributes />
+  <transform_error_handling>
+    <error>
+      <source_transform>DB_DST-cdm_death</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
 </pipeline>

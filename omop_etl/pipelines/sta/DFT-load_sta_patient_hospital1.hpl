@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
+    <name>DFT-load_sta_patient_hospital1</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>paciente_hospital1.csv -&gt; sta.sta_patient_hospital1: every column as text, plus where each row came from</description>
+    <extended_description />
     <pipeline_version />
     <capture_transform_performance>N</capture_transform_performance>
     <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
@@ -13,20 +17,17 @@
         <default_value>hospital1</default_value>
       </parameter>
     </parameters>
-    <name>DFT-load_sta_patient_hospital1</name>
-    <name_sync_with_filename>Y</name_sync_with_filename>
-    <description />
-    <extended_description />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/24 22:27:13.357</created_date>
-    <modified_date>2026/11/27 22:40:00.000</modified_date>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
     <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TextFileInput2</type>
     <name>FF_SRC-patient_hospital1</name>
+    <description>Reads paciente_hospital1.csv from ${SOURCE_DIR}: header line, comma, UTF-8, all fields as text</description>
     <file_type>CSV</file_type>
     <compression>None</compression>
     <separator>,</separator>
@@ -77,7 +78,7 @@
     <rootUriNameFieldName />
     <files>
       <file>
-        <name>${PROJECT_HOME}/data/source/paciente_hospital1.csv</name>
+        <name>${SOURCE_DIR}/paciente_hospital1.csv</name>
         <filemask />
         <exclude_filemask />
         <file_required>Y</file_required>
@@ -200,8 +201,8 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>304</xloc>
-      <yloc>128</yloc>
+      <xloc>96</xloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -212,6 +213,7 @@
   <transform>
     <type>GetVariable</type>
     <name>DER-add_src_site</name>
+    <description>Adds _src_site = ${SOURCE_SITE}, the hospital code</description>
     <fields>
       <field>
         <name>_src_site</name>
@@ -229,8 +231,8 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>304</xloc>
-      <yloc>272</yloc>
+      <xloc>96</xloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -241,11 +243,12 @@
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-sta_patient_hospital1</name>
+    <description>Inserts into sta.sta_patient_hospital1 (WF-load_sta empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>sta</schema>
     <table>sta_patient_hospital1</table>
     <commit>1000</commit>
-    <truncate>Y</truncate>
+    <truncate>N</truncate>
     <only_when_have_rows>Y</only_when_have_rows>
     <ignore_errors>N</ignore_errors>
     <use_batch>Y</use_batch>
@@ -305,8 +308,122 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>304</xloc>
-      <yloc>416</yloc>
+      <xloc>96</xloc>
+      <yloc>400</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-sta_patient_hospital1: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_sta_patient_hospital1</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-sta_patient_hospital1</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>400</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_sta_load_reject</name>
+    <description>Writes the rejected rows of DB_DST-sta_patient_hospital1 with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>sta_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>_src_site</stream_name>
+      </field>
+      <field>
+        <column_name>source_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>source_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -325,8 +442,56 @@
       <to>DB_DST-sta_patient_hospital1</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DB_DST-sta_patient_hospital1</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_sta_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
-  <notepads />
+  <notepads>
+    <notepad>
+      <note>DFT-load_sta_patient_hospital1
+Hospital 1 patients: paciente_hospital1.csv -&gt; sta.sta_patient_hospital1, every column as text.
+Adds _src_site (hospital code), _src_filename and _src_rownum (where each row came from).
+Run by WF-load_sta, which empties sta.sta_patient_hospital1 first.
+Rows the database refuses (red hop) go to adm.sta_load_reject.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>689</width>
+      <heigth>110</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
   <attributes />
-  <transform_error_handling />
+  <transform_error_handling>
+    <error>
+      <source_transform>DB_DST-sta_patient_hospital1</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
 </pipeline>

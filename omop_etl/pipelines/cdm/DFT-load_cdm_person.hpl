@@ -1,30 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
-    <capture_transform_performance>N</capture_transform_performance>
-    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
-    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <pipeline_status>-1</pipeline_status>
-    <parameters />
     <name>DFT-load_cdm_person</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description>ods.patient -&gt; cdm.person</description>
+    <extended_description />
+    <pipeline_version />
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>0</pipeline_status>
+    <parameters />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/28 01:00:00.000</created_date>
-    <modified_date>2026/11/28 01:00:00.000</modified_date>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
     <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TableInput</type>
     <name>DB_SRC-ods_patient</name>
+    <description>Every patient of every hospital</description>
     <sql>SELECT
   source_site
 , patient_number
 , sex_code
 , sex_code_system
 , birth_date
+, birth_time
+, _src_filename
+, _src_rownum
 FROM ods.patient
 </sql>
     <limit>0</limit>
@@ -41,7 +47,7 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>48</yloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -52,6 +58,7 @@ FROM ods.patient
   <transform>
     <type>DBLookup</type>
     <name>LKP-person_id</name>
+    <description>person_id of the patient, from map.person_map</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -86,7 +93,7 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>160</yloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -97,6 +104,7 @@ FROM ods.patient
   <transform>
     <type>DBLookup</type>
     <name>LKP-care_site_id</name>
+    <description>care_site_id of the hospital</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -125,7 +133,7 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>272</yloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -136,6 +144,7 @@ FROM ods.patient
   <transform>
     <type>DBLookup</type>
     <name>LKP-gender_concept_id</name>
+    <description>Sex code -&gt; gender concept (no mapping or no sex sent -&gt; 0, gender is required)</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -177,7 +186,7 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>384</yloc>
+      <yloc>512</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -188,6 +197,7 @@ FROM ods.patient
   <transform>
     <type>Constant</type>
     <name>CST-person</name>
+    <description>Race and ethnicity are not in the source: 0</description>
     <fields>
       <field>
         <currency />
@@ -218,7 +228,76 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>496</yloc>
+      <yloc>624</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SelectValues</type>
+    <name>DCNV-time_format</name>
+    <description>Gives the time fields the HH:mm:ss format the Calculator needs</description>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>birth_time</name>
+        <rename />
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>HH:mm:ss</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>736</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Calculator</type>
+    <name>CAL-datetimes</name>
+    <description>date + time -&gt; datetime (empty time = 00:00:00)</description>
+    <calculation>
+      <field_name>birth_datetime</field_name>
+      <calc_type>ADD_TIME_TO_DATE</calc_type>
+      <field_a>birth_date</field_a>
+      <field_b>birth_time</field_b>
+      <field_c />
+      <value_type>Date</value_type>
+      <value_length>-1</value_length>
+      <value_precision>-1</value_precision>
+      <conversion_mask />
+      <decimal_symbol />
+      <grouping_symbol />
+      <currency_symbol />
+      <remove>N</remove>
+    </calculation>
+    <failIfNoFile>Y</failIfNoFile>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>848</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -229,6 +308,7 @@ FROM ods.patient
   <transform>
     <type>Calculator</type>
     <name>CAL-birth_parts</name>
+    <description>Year, month and day of birth from birth_date</description>
     <calculation>
       <field_name>year_of_birth</field_name>
       <calc_type>YEAR_OF_DATE</calc_type>
@@ -279,7 +359,7 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>608</yloc>
+      <yloc>960</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -290,6 +370,7 @@ FROM ods.patient
   <transform>
     <type>SelectValues</type>
     <name>DCNV-cdm_person</name>
+    <description>Renames to the cdm.person column names</description>
     <fields>
       <field>
         <name>person_id</name>
@@ -317,6 +398,12 @@ FROM ods.patient
       </field>
       <field>
         <name>day_of_birth</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>birth_datetime</name>
         <rename />
         <length>-2</length>
         <precision>-2</precision>
@@ -357,13 +444,31 @@ FROM ods.patient
         <length>-2</length>
         <precision>-2</precision>
       </field>
+      <field>
+        <name>source_site</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_filename</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_rownum</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>720</yloc>
+      <yloc>1072</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -374,6 +479,7 @@ FROM ods.patient
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-cdm_person</name>
+    <description>Inserts into cdm.person (WF-load_cdm empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>cdm</schema>
     <table>person</table>
@@ -414,6 +520,10 @@ FROM ods.patient
         <stream_name>day_of_birth</stream_name>
       </field>
       <field>
+        <column_name>birth_datetime</column_name>
+        <stream_name>birth_datetime</stream_name>
+      </field>
+      <field>
         <column_name>race_concept_id</column_name>
         <stream_name>race_concept_id</stream_name>
       </field>
@@ -442,7 +552,121 @@ FROM ods.patient
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>832</yloc>
+      <yloc>1184</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-cdm_person: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_cdm_person</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-cdm_person</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>1184</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_cdm_load_reject</name>
+    <description>Writes the rejected rows of DB_DST-cdm_person with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>cdm_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
+      </field>
+      <field>
+        <column_name>source_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>source_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>1184</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -473,6 +697,16 @@ FROM ods.patient
     </hop>
     <hop>
       <from>CST-person</from>
+      <to>DCNV-time_format</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-time_format</from>
+      <to>CAL-datetimes</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CAL-datetimes</from>
       <to>CAL-birth_parts</to>
       <enabled>Y</enabled>
     </hop>
@@ -486,8 +720,55 @@ FROM ods.patient
       <to>DB_DST-cdm_person</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DB_DST-cdm_person</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_cdm_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
-  <notepads />
+  <notepads>
+    <notepad>
+      <note>DFT-load_cdm_person
+ods.patient -&gt; cdm.person. person_id from map.person_map, gender from map.code_map (0 if unmapped).
+birth_datetime = birth_date + birth_time; no time sent -&gt; 00:00:00 (OMOP convention, THEMIS #93).
+Refused rows go to adm.cdm_load_reject, with the file and line of the patient.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>717</width>
+      <heigth>92</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
   <attributes />
-  <transform_error_handling />
+  <transform_error_handling>
+    <error>
+      <source_transform>DB_DST-cdm_person</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
 </pipeline>

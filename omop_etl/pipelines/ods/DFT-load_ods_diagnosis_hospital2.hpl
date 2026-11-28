@@ -1,23 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
+    <name>DFT-load_ods_diagnosis_hospital2</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>sta.sta_diagnosis_hospital2 -&gt; ods.diagnosis (hospital 2)</description>
+    <extended_description />
+    <pipeline_version />
     <capture_transform_performance>N</capture_transform_performance>
     <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
     <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <pipeline_status>-1</pipeline_status>
-    <parameters/>
-    <name>DFT-load_ods_diagnosis_hospital2</name>
-    <name_sync_with_filename>Y</name_sync_with_filename>
+    <pipeline_status>0</pipeline_status>
+    <parameters />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/27 22:00:00.000</created_date>
-    <modified_date>2026/11/27 23:30:38.061</modified_date>
-    <created_hop_version/>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
+    <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TableInput</type>
     <name>DB_SRC-sta_diagnosis_hospital2</name>
+    <description>Reads sta.sta_diagnosis_hospital2 (all text)</description>
     <sql>SELECT
   paciente_id
 , episodio_id
@@ -34,27 +38,28 @@ FROM sta.sta_diagnosis_hospital2
     <execute_each_row>N</execute_each_row>
     <variables_active>N</variables_active>
     <connection>CONN-PG_OMOP</connection>
-    <lookup/>
-    <sql_from_file/>
+    <lookup />
+    <sql_from_file />
     <use_named_parameters>Y</use_named_parameters>
     <specify_fields>N</specify_fields>
     <validate_specified_fields>N</validate_specified_fields>
-    <fields/>
+    <fields />
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>48</yloc>
+      <xloc>96</xloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>NullIf</type>
     <name>NUL-diagnosis_hospital2</name>
+    <description>The text NULL sent by the hospital becomes empty</description>
     <fields>
       <field>
         <name>paciente_id</name>
@@ -92,27 +97,28 @@ FROM sta.sta_diagnosis_hospital2
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>176</yloc>
+      <xloc>96</xloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>Constant</type>
     <name>CST-lookup_keys_hospital2</name>
+    <description>Fixed lookup keys: which ODS column each lookup is for ('*' = whole file)</description>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
-        <group/>
+        <currency />
+        <decimal />
+        <group />
         <nullif>diagnosis.diagnosis_code</nullif>
         <name>lkp_diagnosis_code_column</name>
         <type>String</type>
-        <format/>
+        <format />
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -121,18 +127,19 @@ FROM sta.sta_diagnosis_hospital2
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>304</yloc>
+      <xloc>96</xloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>DBLookup</type>
     <name>LKP-code_system_diagnosis_code</name>
+    <description>Code system of diagnosis_code for this hospital, from ods.source_code_system</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -142,48 +149,49 @@ FROM sta.sta_diagnosis_hospital2
       <table>source_code_system</table>
       <key>
         <name>_src_site</name>
-        <name2/>
-        <condition>=</condition>
         <field>source_site</field>
+        <condition>=</condition>
+        <name2 />
       </key>
       <key>
         <name>lkp_diagnosis_code_column</name>
-        <name2/>
-        <condition>=</condition>
         <field>ods_column</field>
+        <condition>=</condition>
+        <name2 />
       </key>
       <key>
         <name>terminologia</name>
-        <name2/>
-        <condition>=</condition>
         <field>source_label</field>
+        <condition>=</condition>
+        <name2 />
       </key>
       <value>
         <name>code_system</name>
         <rename>diagnosis_code_system</rename>
-        <default/>
+        <default />
         <type>String</type>
         <trim_type>none</trim_type>
       </value>
-      <orderby/>
+      <orderby />
       <fail_on_multiple>Y</fail_on_multiple>
       <eat_row_on_failure>N</eat_row_on_failure>
     </lookup>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>432</yloc>
+      <xloc>96</xloc>
+      <yloc>512</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>StringCut</type>
     <name>DER-split_datetimes</name>
+    <description>Splits 'yyyy-MM-dd HH:mm:ss' into a date and a time</description>
     <fields>
       <field>
         <in_stream_name>fecha_hora_diagnostico</in_stream_name>
@@ -201,76 +209,77 @@ FROM sta.sta_diagnosis_hospital2
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>560</yloc>
+      <xloc>96</xloc>
+      <yloc>624</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>SelectValues</type>
     <name>DCNV-diagnosis_hospital2</name>
+    <description>Renames to the ODS column names and sets the types (dates, times, numbers)</description>
     <fields>
       <field>
         <name>_src_site</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>paciente_id</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>episodio_id</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>codigo</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>diagnosis_code_system</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>text_diagnostico</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>fecha_diagnostico</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>hora_diagnostico</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>_src_filename</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
       <field>
         <name>_src_rownum</name>
-        <rename/>
+        <rename />
         <length>-2</length>
         <precision>-2</precision>
       </field>
@@ -281,16 +290,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
-        <conversion_mask/>
+        <storage_type />
+        <conversion_mask />
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -299,16 +308,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
-        <conversion_mask/>
+        <storage_type />
+        <conversion_mask />
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -317,16 +326,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
-        <conversion_mask/>
+        <storage_type />
+        <conversion_mask />
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -335,16 +344,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
-        <conversion_mask/>
+        <storage_type />
+        <conversion_mask />
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -353,16 +362,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
-        <conversion_mask/>
+        <storage_type />
+        <conversion_mask />
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -371,16 +380,16 @@ FROM sta.sta_diagnosis_hospital2
         <type>Date</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
+        <storage_type />
         <conversion_mask>yyyy-MM-dd</conversion_mask>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
       <meta>
@@ -389,34 +398,35 @@ FROM sta.sta_diagnosis_hospital2
         <type>Timestamp</type>
         <length>-2</length>
         <precision>-2</precision>
-        <storage_type/>
+        <storage_type />
         <conversion_mask>HH:mm:ss</conversion_mask>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
+        <date_format_locale />
+        <date_format_timezone />
         <lenient_string_to_number>N</lenient_string_to_number>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <encoding/>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
         <roundingType>half_even</roundingType>
       </meta>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>688</yloc>
+      <xloc>96</xloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-ods_diagnosis</name>
+    <description>Inserts into ods.diagnosis (WF-load_ods empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>ods</schema>
     <table>diagnosis</table>
@@ -425,99 +435,95 @@ FROM sta.sta_diagnosis_hospital2
     <only_when_have_rows>N</only_when_have_rows>
     <ignore_errors>N</ignore_errors>
     <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
+    <partitioning_field />
     <partitioning_daily>N</partitioning_daily>
     <partitioning_monthly>Y</partitioning_monthly>
     <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
+    <tablename_field />
     <tablename_in_table>Y</tablename_in_table>
     <return_keys>N</return_keys>
-    <return_field/>
-    <specify_fields>Y</specify_fields>
-    <auto_update_table_structure>N</auto_update_table_structure>
-    <always_drop_and_recreate>N</always_drop_and_recreate>
-    <add_columns>N</add_columns>
-    <drop_columns>N</drop_columns>
-    <change_column_types>N</change_column_types>
+    <return_field />
     <fields>
       <field>
-        <stream_name>source_site</stream_name>
         <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
       </field>
       <field>
-        <stream_name>patient_number</stream_name>
         <column_name>patient_number</column_name>
+        <stream_name>patient_number</stream_name>
       </field>
       <field>
-        <stream_name>episode_number</stream_name>
         <column_name>episode_number</column_name>
+        <stream_name>episode_number</stream_name>
       </field>
       <field>
-        <stream_name>diagnosis_code</stream_name>
         <column_name>diagnosis_code</column_name>
+        <stream_name>diagnosis_code</stream_name>
       </field>
       <field>
-        <stream_name>diagnosis_code_system</stream_name>
         <column_name>diagnosis_code_system</column_name>
+        <stream_name>diagnosis_code_system</stream_name>
       </field>
       <field>
-        <stream_name>diagnosis_text</stream_name>
         <column_name>diagnosis_text</column_name>
+        <stream_name>diagnosis_text</stream_name>
       </field>
       <field>
-        <stream_name>diagnosis_date</stream_name>
         <column_name>diagnosis_date</column_name>
+        <stream_name>diagnosis_date</stream_name>
       </field>
       <field>
-        <stream_name>diagnosis_time</stream_name>
         <column_name>diagnosis_time</column_name>
+        <stream_name>diagnosis_time</stream_name>
       </field>
       <field>
-        <stream_name>_src_filename</stream_name>
         <column_name>_src_filename</column_name>
+        <stream_name>_src_filename</stream_name>
       </field>
       <field>
-        <stream_name>_src_rownum</stream_name>
         <column_name>_src_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
       </field>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>128</xloc>
-      <yloc>816</yloc>
+      <xloc>96</xloc>
+      <yloc>848</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>Constant</type>
-    <name>CST-reject_info</name>
+    <name>CST-reject_conversion</name>
+    <description>Rejected rows of DCNV-diagnosis_hospital2: adds which pipeline and which step refused them</description>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
-        <group/>
+        <currency />
+        <decimal />
+        <group />
         <nullif>DFT-load_ods_diagnosis_hospital2</nullif>
         <name>pipeline_name</name>
         <type>String</type>
-        <format/>
+        <format />
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
       </field>
       <field>
-        <currency/>
-        <decimal/>
-        <group/>
+        <currency />
+        <decimal />
+        <group />
         <nullif>DCNV-diagnosis_hospital2</nullif>
         <name>transform_name</name>
         <type>String</type>
-        <format/>
+        <format />
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -526,90 +532,200 @@ FROM sta.sta_diagnosis_hospital2
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>448</xloc>
-      <yloc>688</yloc>
+      <xloc>352</xloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
   </transform>
   <transform>
     <type>TableOutput</type>
-    <name>DB_DST-ods_load_reject</name>
+    <name>DB_DST-adm_ods_load_reject_conversion</name>
+    <description>Writes the rejected rows of DCNV-diagnosis_hospital2 with the error Hop reported</description>
     <connection>CONN-PG_OMOP</connection>
-    <schema>ods</schema>
-    <table>load_reject</table>
+    <schema>adm</schema>
+    <table>ods_load_reject</table>
     <commit>1000</commit>
     <truncate>N</truncate>
     <only_when_have_rows>N</only_when_have_rows>
     <ignore_errors>N</ignore_errors>
     <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
+    <partitioning_field />
     <partitioning_daily>N</partitioning_daily>
     <partitioning_monthly>Y</partitioning_monthly>
     <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
+    <tablename_field />
     <tablename_in_table>Y</tablename_in_table>
     <return_keys>N</return_keys>
-    <return_field/>
-    <specify_fields>Y</specify_fields>
-    <auto_update_table_structure>N</auto_update_table_structure>
-    <always_drop_and_recreate>N</always_drop_and_recreate>
-    <add_columns>N</add_columns>
-    <drop_columns>N</drop_columns>
-    <change_column_types>N</change_column_types>
+    <return_field />
     <fields>
       <field>
-        <stream_name>pipeline_name</stream_name>
         <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
       </field>
       <field>
-        <stream_name>transform_name</stream_name>
         <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
       </field>
       <field>
-        <stream_name>_src_site</stream_name>
         <column_name>source_site</column_name>
+        <stream_name>_src_site</stream_name>
       </field>
       <field>
+        <column_name>source_filename</column_name>
         <stream_name>_src_filename</stream_name>
-        <column_name>_src_filename</column_name>
       </field>
       <field>
+        <column_name>source_rownum</column_name>
         <stream_name>_src_rownum</stream_name>
-        <column_name>_src_rownum</column_name>
       </field>
       <field>
-        <stream_name>error_count</stream_name>
         <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
       </field>
       <field>
-        <stream_name>error_fields</stream_name>
         <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
       </field>
       <field>
-        <stream_name>error_codes</stream_name>
         <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
       </field>
       <field>
-        <stream_name>error_description</stream_name>
         <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
       </field>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>448</xloc>
-      <yloc>816</yloc>
+      <xloc>608</xloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
-    <attributes/>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-ods_diagnosis: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_ods_diagnosis_hospital2</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-ods_diagnosis</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>848</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_ods_load_reject_write</name>
+    <description>Writes the rejected rows of DB_DST-ods_diagnosis with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>ods_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
+      </field>
+      <field>
+        <column_name>source_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>source_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>848</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
   </transform>
   <order>
     <hop>
@@ -644,29 +760,78 @@ FROM sta.sta_diagnosis_hospital2
     </hop>
     <hop>
       <from>DCNV-diagnosis_hospital2</from>
-      <to>CST-reject_info</to>
+      <to>CST-reject_conversion</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>CST-reject_info</from>
-      <to>DB_DST-ods_load_reject</to>
+      <from>CST-reject_conversion</from>
+      <to>DB_DST-adm_ods_load_reject_conversion</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DB_DST-ods_diagnosis</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_ods_load_reject_write</to>
       <enabled>Y</enabled>
     </hop>
   </order>
-  <notepads/>
-  <attributes/>
+  <notepads>
+    <notepad>
+      <note>DFT-load_ods_diagnosis_hospital2
+Hospital 2 diagnoses: sta.sta_diagnosis_hospital2 -&gt; ods.diagnosis. Run by WF-load_ods, which empties ods.diagnosis first.
+1. NUL: the text NULL becomes empty
+2. LKP: code system of each coded column, from ods.source_code_system
+3. DCNV: ODS names and types
+4. DB_DST: insert into ods.diagnosis
+Red hops: rows DCNV cannot convert, and rows ods.diagnosis refuses, go to adm.ods_load_reject.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>878</width>
+      <heigth>146</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
+  <attributes />
   <transform_error_handling>
     <error>
       <source_transform>DCNV-diagnosis_hospital2</source_transform>
-      <target_transform>CST-reject_info</target_transform>
+      <target_transform>CST-reject_conversion</target_transform>
       <is_enabled>Y</is_enabled>
       <nr_valuename>error_count</nr_valuename>
       <descriptions_valuename>error_description</descriptions_valuename>
       <fields_valuename>error_fields</fields_valuename>
       <codes_valuename>error_codes</codes_valuename>
-      <max_errors/>
-      <max_pct_errors/>
-      <min_pct_rows/>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+    <error>
+      <source_transform>DB_DST-ods_diagnosis</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
     </error>
   </transform_error_handling>
 </pipeline>

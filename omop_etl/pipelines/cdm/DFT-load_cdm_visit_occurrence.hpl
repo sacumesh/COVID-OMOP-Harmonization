@@ -1,24 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pipeline>
   <info>
-    <capture_transform_performance>N</capture_transform_performance>
-    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
-    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <pipeline_status>-1</pipeline_status>
-    <parameters />
     <name>DFT-load_cdm_visit_occurrence</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description>map.visit_source (episodes, dates derived from their events) -&gt; cdm.visit_occurrence</description>
+    <extended_description />
+    <pipeline_version />
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>0</pipeline_status>
+    <parameters />
     <created_user>-</created_user>
     <modified_user>-</modified_user>
-    <created_date>2026/11/28 01:00:00.000</created_date>
-    <modified_date>2026/11/28 01:00:00.000</modified_date>
+    <created_date>2026/11/28 18:00:00.000</created_date>
+    <modified_date>2026/11/28 18:00:00.000</modified_date>
     <created_hop_version />
     <modified_hop_version>2.20.0</modified_hop_version>
   </info>
   <transform>
     <type>TableInput</type>
     <name>DB_SRC-map_visit_source</name>
+    <description>Every episode with its first and last event date</description>
     <sql>SELECT
   visit_occurrence_id
 , source_site
@@ -42,7 +45,7 @@ FROM map.visit_source
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>48</yloc>
+      <yloc>176</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -53,6 +56,7 @@ FROM map.visit_source
   <transform>
     <type>DBLookup</type>
     <name>LKP-person_id</name>
+    <description>person_id of the patient, from map.person_map</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -87,7 +91,7 @@ FROM map.visit_source
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>160</yloc>
+      <yloc>288</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -98,6 +102,7 @@ FROM map.visit_source
   <transform>
     <type>DBLookup</type>
     <name>LKP-care_site_id</name>
+    <description>care_site_id of the hospital</description>
     <connection>CONN-PG_OMOP</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
@@ -126,7 +131,7 @@ FROM map.visit_source
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>272</yloc>
+      <yloc>400</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -137,6 +142,7 @@ FROM map.visit_source
   <transform>
     <type>Constant</type>
     <name>CST-visit</name>
+    <description>Visit type not in the source -&gt; 0; dates derived by rule -&gt; 32882 Standard algorithm from EHR</description>
     <fields>
       <field>
         <currency />
@@ -167,7 +173,7 @@ FROM map.visit_source
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>384</yloc>
+      <yloc>512</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -178,6 +184,7 @@ FROM map.visit_source
   <transform>
     <type>SelectValues</type>
     <name>DCNV-cdm_visit_occurrence</name>
+    <description>Renames to the cdm.visit_occurrence column names</description>
     <fields>
       <field>
         <name>visit_occurrence_id</name>
@@ -227,13 +234,19 @@ FROM map.visit_source
         <length>-2</length>
         <precision>-2</precision>
       </field>
+      <field>
+        <name>source_site</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>496</yloc>
+      <yloc>624</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -244,6 +257,7 @@ FROM map.visit_source
   <transform>
     <type>TableOutput</type>
     <name>DB_DST-cdm_visit_occurrence</name>
+    <description>Inserts into cdm.visit_occurrence (WF-load_cdm empties it before the run)</description>
     <connection>CONN-PG_OMOP</connection>
     <schema>cdm</schema>
     <table>visit_occurrence</table>
@@ -300,7 +314,113 @@ FROM map.visit_source
     <copies>1</copies>
     <GUI>
       <xloc>96</xloc>
-      <yloc>608</yloc>
+      <yloc>736</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_write</name>
+    <description>Rejected rows of DB_DST-cdm_visit_occurrence: adds which pipeline and which step refused them</description>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_cdm_visit_occurrence</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DB_DST-cdm_visit_occurrence</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>736</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-adm_cdm_load_reject</name>
+    <description>Writes the rejected rows of DB_DST-cdm_visit_occurrence with the error Hop reported</description>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>adm</schema>
+    <table>cdm_load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>source_site</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>736</yloc>
     </GUI>
     <partitioning>
       <method>none</method>
@@ -334,8 +454,54 @@ FROM map.visit_source
       <to>DB_DST-cdm_visit_occurrence</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DB_DST-cdm_visit_occurrence</from>
+      <to>CST-reject_write</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_write</from>
+      <to>DB_DST-adm_cdm_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
-  <notepads />
+  <notepads>
+    <notepad>
+      <note>DFT-load_cdm_visit_occurrence
+map.visit_source -&gt; cdm.visit_occurrence. The source has no admission dates: a visit runs from the first
+to the last event of its episode. Refused rows go to adm.cdm_load_reject.</note>
+      <xloc>32</xloc>
+      <yloc>16</yloc>
+      <width>752</width>
+      <heigth>74</heigth>
+      <fontname />
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
   <attributes />
-  <transform_error_handling />
+  <transform_error_handling>
+    <error>
+      <source_transform>DB_DST-cdm_visit_occurrence</source_transform>
+      <target_transform>CST-reject_write</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
 </pipeline>
