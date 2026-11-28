@@ -1,0 +1,434 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pipeline>
+  <info>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>-1</pipeline_status>
+    <parameters />
+    <name>DFT-load_ods_patient_hospital3</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <created_user>-</created_user>
+    <modified_user>-</modified_user>
+    <created_date>2026/11/27 22:00:00.000</created_date>
+    <modified_date>2026/11/27 22:00:00.000</modified_date>
+    <created_hop_version />
+    <modified_hop_version>2.20.0</modified_hop_version>
+  </info>
+  <transform>
+    <type>TableInput</type>
+    <name>DB_SRC-sta_patient_hospital3</name>
+    <sql>SELECT
+  id_px
+, fecha_birth
+, fecha_death
+, _src_rownum
+, _src_filename
+, _src_site
+FROM sta.sta_patient_hospital3
+</sql>
+    <limit>0</limit>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <connection>CONN-PG_OMOP</connection>
+    <lookup />
+    <sql_from_file />
+    <use_named_parameters>Y</use_named_parameters>
+    <specify_fields>N</specify_fields>
+    <validate_specified_fields>N</validate_specified_fields>
+    <fields />
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>48</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>NullIf</type>
+    <name>NUL-patient_hospital3</name>
+    <fields>
+      <field>
+        <name>id_px</name>
+        <value>NULL</value>
+      </field>
+      <field>
+        <name>fecha_birth</name>
+        <value>NULL</value>
+      </field>
+      <field>
+        <name>fecha_death</name>
+        <value>NULL</value>
+      </field>
+      <field>
+        <name>_src_filename</name>
+        <value>NULL</value>
+      </field>
+      <field>
+        <name>_src_site</name>
+        <value>NULL</value>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>176</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SelectValues</type>
+    <name>DCNV-patient_hospital3</name>
+    <fields>
+      <field>
+        <name>_src_site</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>id_px</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>fecha_birth</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>fecha_death</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_filename</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>_src_rownum</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>_src_site</name>
+        <rename>source_site</rename>
+        <type>String</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask />
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>id_px</name>
+        <rename>patient_number</rename>
+        <type>String</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask />
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>fecha_birth</name>
+        <rename>birth_date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>yyyy-MM-dd</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>fecha_death</name>
+        <rename>death_date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>yyyy-MM-dd</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>304</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>InsertUpdate</type>
+    <name>UPS-ods_patient</name>
+    <lookup>
+      <key>
+        <name>source_site</name>
+        <field>source_site</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>patient_number</name>
+        <field>patient_number</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <value>
+        <name>source_site</name>
+        <rename>source_site</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>patient_number</name>
+        <rename>patient_number</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>birth_date</name>
+        <rename>birth_date</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>death_date</name>
+        <rename>death_date</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>_src_filename</name>
+        <rename>_src_filename</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>_src_rownum</name>
+        <rename>_src_rownum</rename>
+        <update>Y</update>
+      </value>
+      <schema>ods</schema>
+      <table>patient</table>
+    </lookup>
+    <commit>1000</commit>
+    <update_bypassed>N</update_bypassed>
+    <connection>CONN-PG_OMOP</connection>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>432</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-reject_info</name>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DFT-load_ods_patient_hospital3</nullif>
+        <name>pipeline_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>DCNV-patient_hospital3</nullif>
+        <name>transform_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>448</xloc>
+      <yloc>304</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-ods_load_reject</name>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>ods</schema>
+    <table>load_reject</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>pipeline_name</column_name>
+        <stream_name>pipeline_name</stream_name>
+      </field>
+      <field>
+        <column_name>transform_name</column_name>
+        <stream_name>transform_name</stream_name>
+      </field>
+      <field>
+        <column_name>source_site</column_name>
+        <stream_name>_src_site</stream_name>
+      </field>
+      <field>
+        <column_name>_src_filename</column_name>
+        <stream_name>_src_filename</stream_name>
+      </field>
+      <field>
+        <column_name>_src_rownum</column_name>
+        <stream_name>_src_rownum</stream_name>
+      </field>
+      <field>
+        <column_name>error_count</column_name>
+        <stream_name>error_count</stream_name>
+      </field>
+      <field>
+        <column_name>error_fields</column_name>
+        <stream_name>error_fields</stream_name>
+      </field>
+      <field>
+        <column_name>error_codes</column_name>
+        <stream_name>error_codes</stream_name>
+      </field>
+      <field>
+        <column_name>error_description</column_name>
+        <stream_name>error_description</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>448</xloc>
+      <yloc>432</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <order>
+    <hop>
+      <from>DB_SRC-sta_patient_hospital3</from>
+      <to>NUL-patient_hospital3</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>NUL-patient_hospital3</from>
+      <to>DCNV-patient_hospital3</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-patient_hospital3</from>
+      <to>UPS-ods_patient</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-patient_hospital3</from>
+      <to>CST-reject_info</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-reject_info</from>
+      <to>DB_DST-ods_load_reject</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <notepads />
+  <attributes />
+  <transform_error_handling>
+    <error>
+      <source_transform>DCNV-patient_hospital3</source_transform>
+      <target_transform>CST-reject_info</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>error_count</nr_valuename>
+      <descriptions_valuename>error_description</descriptions_valuename>
+      <fields_valuename>error_fields</fields_valuename>
+      <codes_valuename>error_codes</codes_valuename>
+      <max_errors />
+      <max_pct_errors />
+      <min_pct_rows />
+    </error>
+  </transform_error_handling>
+</pipeline>

@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pipeline>
+  <info>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>-1</pipeline_status>
+    <parameters />
+    <name>DFT-load_cdm_cdm_source</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>describes this CDM in cdm.cdm_source (needed by DQD and ATLAS)</description>
+    <created_user>-</created_user>
+    <modified_user>-</modified_user>
+    <created_date>2026/11/28 01:00:00.000</created_date>
+    <modified_date>2026/11/28 01:00:00.000</modified_date>
+    <created_hop_version />
+    <modified_hop_version>2.20.0</modified_hop_version>
+  </info>
+  <transform>
+    <type>TableInput</type>
+    <name>DB_SRC-cdm_source_facts</name>
+    <sql>SELECT
+  (SELECT vocabulary_version FROM cdm.vocabulary WHERE vocabulary_id = 'None')
+, (SELECT max(_loaded_at) FROM ods.patient)
+, (SELECT coalesce(min(concept_id), 0) FROM cdm.concept
+   WHERE vocabulary_id = 'CDM'
+     AND (concept_name ILIKE 'OMOP CDM Version 5.4%' OR concept_code ILIKE 'CDM v5.4%'))
+</sql>
+    <limit>0</limit>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <connection>CONN-PG_OMOP</connection>
+    <lookup />
+    <sql_from_file />
+    <use_named_parameters>Y</use_named_parameters>
+    <specify_fields>N</specify_fields>
+    <validate_specified_fields>N</validate_specified_fields>
+    <fields />
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>48</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SystemInfo</type>
+    <name>SYS-today</name>
+    <fields>
+      <field>
+        <name>cdm_release_date</name>
+        <type>system date (variable)</type>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>160</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-cdm_source</name>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>BDC multicentric OMOP database</nullif>
+        <name>cdm_source_name</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>BDC_COVID</nullif>
+        <name>cdm_source_abbreviation</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>Research group (coordinating centre)</nullif>
+        <name>cdm_holder</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>COVID-19 hospital extracts from three hospitals (demographics, diagnoses, laboratory, vital signs, medication), harmonised through staging (sta) and an EHR-level ODS (ods) with Apache Hop.</nullif>
+        <name>source_description</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>Apache Hop pipelines DFT-load_sta_*, DFT-load_ods_*, DFT-load_cdm_*, workflow WF-load_cdm</nullif>
+        <name>cdm_etl_reference</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>5.4</nullif>
+        <name>cdm_version</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>272</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SelectValues</type>
+    <name>DCNV-cdm_source</name>
+    <fields>
+      <field>
+        <name>cdm_source_name</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>cdm_source_abbreviation</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>cdm_holder</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>source_description</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>cdm_etl_reference</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>max</name>
+        <rename>source_release_date</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>cdm_release_date</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>cdm_version</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>coalesce</name>
+        <rename>cdm_version_concept_id</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>vocabulary_version</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>source_release_date</name>
+        <rename />
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>yyyy-MM-dd</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>cdm_release_date</name>
+        <rename />
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>yyyy-MM-dd</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>cdm_version_concept_id</name>
+        <rename />
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask />
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>384</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-cdm_cdm_source</name>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>cdm</schema>
+    <table>cdm_source</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>cdm_source_name</column_name>
+        <stream_name>cdm_source_name</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_source_abbreviation</column_name>
+        <stream_name>cdm_source_abbreviation</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_holder</column_name>
+        <stream_name>cdm_holder</stream_name>
+      </field>
+      <field>
+        <column_name>source_description</column_name>
+        <stream_name>source_description</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_etl_reference</column_name>
+        <stream_name>cdm_etl_reference</stream_name>
+      </field>
+      <field>
+        <column_name>source_release_date</column_name>
+        <stream_name>source_release_date</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_release_date</column_name>
+        <stream_name>cdm_release_date</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_version</column_name>
+        <stream_name>cdm_version</stream_name>
+      </field>
+      <field>
+        <column_name>cdm_version_concept_id</column_name>
+        <stream_name>cdm_version_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>vocabulary_version</column_name>
+        <stream_name>vocabulary_version</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>496</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <order>
+    <hop>
+      <from>DB_SRC-cdm_source_facts</from>
+      <to>SYS-today</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>SYS-today</from>
+      <to>CST-cdm_source</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-cdm_source</from>
+      <to>DCNV-cdm_source</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-cdm_source</from>
+      <to>DB_DST-cdm_cdm_source</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <notepads />
+  <attributes />
+  <transform_error_handling />
+</pipeline>

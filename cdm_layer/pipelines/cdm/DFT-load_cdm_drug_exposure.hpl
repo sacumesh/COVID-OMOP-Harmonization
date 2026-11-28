@@ -1,0 +1,666 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pipeline>
+  <info>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_status>-1</pipeline_status>
+    <parameters />
+    <name>DFT-load_cdm_drug_exposure</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>ods.drug -&gt; cdm.drug_exposure</description>
+    <created_user>-</created_user>
+    <modified_user>-</modified_user>
+    <created_date>2026/11/28 01:00:00.000</created_date>
+    <modified_date>2026/11/28 01:00:00.000</modified_date>
+    <created_hop_version />
+    <modified_hop_version>2.20.0</modified_hop_version>
+  </info>
+  <transform>
+    <type>TableInput</type>
+    <name>DB_SRC-ods_drug</name>
+    <sql>SELECT
+  source_site
+, patient_number
+, episode_number
+, drug_code
+, drug_code_system
+, route_code
+, route_code_system
+, frequency_code
+, start_date
+, start_time
+, end_date
+, end_time
+FROM ods.drug
+</sql>
+    <limit>0</limit>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <connection>CONN-PG_OMOP</connection>
+    <lookup />
+    <sql_from_file />
+    <use_named_parameters>Y</use_named_parameters>
+    <specify_fields>N</specify_fields>
+    <validate_specified_fields>N</validate_specified_fields>
+    <fields />
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>48</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>DBLookup</type>
+    <name>LKP-person_id</name>
+    <connection>CONN-PG_OMOP</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <cache_load_all>Y</cache_load_all>
+    <lookup>
+      <schema>map</schema>
+      <table>person_map</table>
+      <key>
+        <name>source_site</name>
+        <field>source_site</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>patient_number</name>
+        <field>patient_number</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <value>
+        <name>person_id</name>
+        <rename>person_id</rename>
+        <default />
+        <type>Integer</type>
+        <trim_type>none</trim_type>
+      </value>
+      <orderby />
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+    </lookup>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>160</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>DBLookup</type>
+    <name>LKP-visit_occurrence_id</name>
+    <connection>CONN-PG_OMOP</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <cache_load_all>Y</cache_load_all>
+    <lookup>
+      <schema>map</schema>
+      <table>visit_map</table>
+      <key>
+        <name>source_site</name>
+        <field>source_site</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>patient_number</name>
+        <field>patient_number</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>episode_number</name>
+        <field>episode_number</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <value>
+        <name>visit_occurrence_id</name>
+        <rename>visit_occurrence_id</rename>
+        <default />
+        <type>Integer</type>
+        <trim_type>none</trim_type>
+      </value>
+      <orderby />
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+    </lookup>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>272</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Constant</type>
+    <name>CST-drug</name>
+    <fields>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>32838</nullif>
+        <name>type_concept_id</name>
+        <type>Integer</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <currency />
+        <decimal />
+        <group />
+        <nullif>Route</nullif>
+        <name>lkp_domain_route</name>
+        <type>String</type>
+        <format />
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>384</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>DBLookup</type>
+    <name>LKP-route_concept_id</name>
+    <connection>CONN-PG_OMOP</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <cache_load_all>Y</cache_load_all>
+    <lookup>
+      <schema>map</schema>
+      <table>code_map</table>
+      <key>
+        <name>route_code_system</name>
+        <field>code_system</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>route_code</name>
+        <field>source_code</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <key>
+        <name>lkp_domain_route</name>
+        <field>target_domain_id</field>
+        <condition>=</condition>
+        <name2 />
+      </key>
+      <value>
+        <name>target_concept_id</name>
+        <rename>route_concept_id</rename>
+        <default>0</default>
+        <type>Integer</type>
+        <trim_type>none</trim_type>
+      </value>
+      <orderby />
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+    </lookup>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>496</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>DBJoin</type>
+    <name>LKP-code_map_drug_code</name>
+    <connection>CONN-PG_OMOP</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <sql>SELECT source_concept_id, target_concept_id
+FROM map.code_map
+WHERE code_system = ? AND source_code = ?
+  AND (target_concept_id = 0 OR target_domain_id = 'Drug')</sql>
+    <sql_from_file />
+    <rowlimit>0</rowlimit>
+    <outer_join>Y</outer_join>
+    <replace_vars>N</replace_vars>
+    <parameter>
+      <field>
+        <name>drug_code_system</name>
+        <type>String</type>
+      </field>
+      <field>
+        <name>drug_code</name>
+        <type>String</type>
+      </field>
+    </parameter>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>608</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SelectValues</type>
+    <name>DCNV-time_format</name>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>start_time</name>
+        <rename />
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>HH:mm:ss</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+      <meta>
+        <name>end_time</name>
+        <rename />
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <storage_type />
+        <conversion_mask>HH:mm:ss</conversion_mask>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>N</lenient_string_to_number>
+        <decimal_symbol />
+        <grouping_symbol />
+        <currency_symbol />
+        <encoding />
+        <roundingType>half_even</roundingType>
+      </meta>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>720</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Calculator</type>
+    <name>CAL-datetimes</name>
+    <calculation>
+      <field_name>start_datetime</field_name>
+      <calc_type>ADD_TIME_TO_DATE</calc_type>
+      <field_a>start_date</field_a>
+      <field_b>start_time</field_b>
+      <field_c />
+      <value_type>Date</value_type>
+      <value_length>-1</value_length>
+      <value_precision>-1</value_precision>
+      <conversion_mask />
+      <decimal_symbol />
+      <grouping_symbol />
+      <currency_symbol />
+      <remove>N</remove>
+    </calculation>
+    <calculation>
+      <field_name>end_datetime</field_name>
+      <calc_type>ADD_TIME_TO_DATE</calc_type>
+      <field_a>end_date</field_a>
+      <field_b>end_time</field_b>
+      <field_c />
+      <value_type>Date</value_type>
+      <value_length>-1</value_length>
+      <value_precision>-1</value_precision>
+      <conversion_mask />
+      <decimal_symbol />
+      <grouping_symbol />
+      <currency_symbol />
+      <remove>N</remove>
+    </calculation>
+    <failIfNoFile>Y</failIfNoFile>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>832</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>Sequence</type>
+    <name>SEQ-drug_exposure_id</name>
+    <valuename>drug_exposure_id</valuename>
+    <use_database>Y</use_database>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>cdm</schema>
+    <seqname>seq_drug_exposure_id</seqname>
+    <use_counter>N</use_counter>
+    <counter_name />
+    <start_at>1</start_at>
+    <increment_by>1</increment_by>
+    <max_value>999999999</max_value>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>944</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>SelectValues</type>
+    <name>DCNV-cdm_drug_exposure</name>
+    <fields>
+      <field>
+        <name>drug_exposure_id</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>person_id</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>target_concept_id</name>
+        <rename>drug_concept_id</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>start_date</name>
+        <rename>drug_exposure_start_date</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>start_datetime</name>
+        <rename>drug_exposure_start_datetime</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>end_date</name>
+        <rename>drug_exposure_end_date</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>end_datetime</name>
+        <rename>drug_exposure_end_datetime</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>end_date</name>
+        <rename>verbatim_end_date</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>type_concept_id</name>
+        <rename>drug_type_concept_id</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>frequency_code</name>
+        <rename>sig</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>route_concept_id</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>visit_occurrence_id</name>
+        <rename />
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>drug_code</name>
+        <rename>drug_source_value</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>source_concept_id</name>
+        <rename>drug_source_concept_id</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <field>
+        <name>route_code</name>
+        <rename>route_source_value</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>1056</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>DB_DST-cdm_drug_exposure</name>
+    <connection>CONN-PG_OMOP</connection>
+    <schema>cdm</schema>
+    <table>drug_exposure</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>drug_exposure_id</column_name>
+        <stream_name>drug_exposure_id</stream_name>
+      </field>
+      <field>
+        <column_name>person_id</column_name>
+        <stream_name>person_id</stream_name>
+      </field>
+      <field>
+        <column_name>drug_concept_id</column_name>
+        <stream_name>drug_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>drug_exposure_start_date</column_name>
+        <stream_name>drug_exposure_start_date</stream_name>
+      </field>
+      <field>
+        <column_name>drug_exposure_start_datetime</column_name>
+        <stream_name>drug_exposure_start_datetime</stream_name>
+      </field>
+      <field>
+        <column_name>drug_exposure_end_date</column_name>
+        <stream_name>drug_exposure_end_date</stream_name>
+      </field>
+      <field>
+        <column_name>drug_exposure_end_datetime</column_name>
+        <stream_name>drug_exposure_end_datetime</stream_name>
+      </field>
+      <field>
+        <column_name>verbatim_end_date</column_name>
+        <stream_name>verbatim_end_date</stream_name>
+      </field>
+      <field>
+        <column_name>drug_type_concept_id</column_name>
+        <stream_name>drug_type_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>sig</column_name>
+        <stream_name>sig</stream_name>
+      </field>
+      <field>
+        <column_name>route_concept_id</column_name>
+        <stream_name>route_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>visit_occurrence_id</column_name>
+        <stream_name>visit_occurrence_id</stream_name>
+      </field>
+      <field>
+        <column_name>drug_source_value</column_name>
+        <stream_name>drug_source_value</stream_name>
+      </field>
+      <field>
+        <column_name>drug_source_concept_id</column_name>
+        <stream_name>drug_source_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>route_source_value</column_name>
+        <stream_name>route_source_value</stream_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>1168</yloc>
+    </GUI>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <attributes />
+  </transform>
+  <order>
+    <hop>
+      <from>DB_SRC-ods_drug</from>
+      <to>LKP-person_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>LKP-person_id</from>
+      <to>LKP-visit_occurrence_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>LKP-visit_occurrence_id</from>
+      <to>CST-drug</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CST-drug</from>
+      <to>LKP-route_concept_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>LKP-route_concept_id</from>
+      <to>LKP-code_map_drug_code</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>LKP-code_map_drug_code</from>
+      <to>DCNV-time_format</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-time_format</from>
+      <to>CAL-datetimes</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CAL-datetimes</from>
+      <to>SEQ-drug_exposure_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>SEQ-drug_exposure_id</from>
+      <to>DCNV-cdm_drug_exposure</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>DCNV-cdm_drug_exposure</from>
+      <to>DB_DST-cdm_drug_exposure</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <notepads />
+  <attributes />
+  <transform_error_handling />
+</pipeline>
