@@ -35,7 +35,7 @@ hop/config/environments/
 # Data & Local Databases (CRITICAL for Healthcare/OMOP)
 # ==========================================
 # Ignore raw data, exports, and local DB files to prevent leaking sensitive patient data
-data/*
+data/athena_vocab
 !data/.gitkeep
 ingestion/data/
 *.csv
