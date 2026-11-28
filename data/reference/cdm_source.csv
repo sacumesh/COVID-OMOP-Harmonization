@@ -1,0 +1,2 @@
+cdm_source_name,cdm_source_abbreviation,cdm_holder,source_description,source_documentation_reference,cdm_etl_reference,cdm_version
+BDC multicentric OMOP database,BDC_COVID,Research group (coordinating centre),"COVID-19 hospital extracts from three hospitals (demographics, diagnoses, laboratory, vital signs, medication), harmonised through staging (sta) and an EHR-level ODS (ods) with Apache Hop.",,"Apache Hop project omop_etl, workflow WF-load_all (see README.md)",5.4

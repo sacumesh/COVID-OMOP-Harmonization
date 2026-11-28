@@ -1,0 +1,23 @@
+code_system,description,is_standard
+ICD-10-CM,ICD-10 Clinical Modification,true
+ICD-9-CM,ICD-9 Clinical Modification,true
+SNOMED CT,SNOMED Clinical Terms,true
+ATC,Anatomical Therapeutic Chemical,true
+LOINC,Logical Observation Identifiers,true
+Nebraska Lexicon,Nebraska Lexicon (SNOMED CT extension),true
+H1_SEX,Hospital 1 local sex codes,false
+H1_VITAL_STATUS,Hospital 1 local vital status codes,false
+H1_DX_TYPE,Hospital 1 local diagnosis type codes,false
+H1_DRUG,Hospital 1 local drug codes,false
+H1_ROUTE,Hospital 1 local route codes,false
+H1_FREQUENCY,Hospital 1 local frequency codes,false
+H1_LAB,Hospital 1 local lab test codes,false
+H1_LAB_FLAG,Hospital 1 local abnormal flags,false
+H1_UNIT,Hospital 1 local units,false
+H2_ROUTE,Hospital 2 free-text routes,false
+H2_FREQUENCY,Hospital 2 free-text frequencies,false
+H2_UNIT,Hospital 2 local units,false
+H2_VITAL,Hospital 2 local vital sign codes,false
+H3_LAB,Hospital 3 local lab test codes,false
+H3_LAB_FLAG,Hospital 3 local abnormal flags,false
+H3_UNIT,Hospital 3 local units,false

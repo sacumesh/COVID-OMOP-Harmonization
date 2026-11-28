@@ -1,0 +1,27 @@
+unit_as_sent,ucum_code,tier,rule
+%,%,1,UCUM code as sent
+mg/dL,mg/dL,1,UCUM code as sent
+g/L,g/L,1,UCUM code as sent
+mmol/L,mmol/L,1,UCUM code as sent
+ng/mL,ng/mL,1,UCUM code as sent
+L/L,L/L,1,UCUM code as sent
+pg,pg,1,UCUM code as sent
+ng/L,ng/L,1,UCUM code as sent
+pg/mL,pg/mL,1,UCUM code as sent
+g/mL,g/mL,1,UCUM code as sent
+mm/h,mm/h,1,UCUM code as sent
+10^9/L,10*9/L,2,"power of ten written with ^, UCUM writes 10*9"
+10^12/L,10*12/L,2,"power of ten written with ^, UCUM writes 10*12"
+U/L,[U]/L,2,"enzyme unit per litre, OMOP UCUM vocabulary writes the unit as [U]"
+fl,fL,2,"UCUM is case-sensitive, litre is L"
+g/dl,g/dL,2,"UCUM is case-sensitive, litre is L"
+mEq/L,10*-3.eq/L,2,"milliequivalent per litre, OMOP UCUM vocabulary writes milli as 10*-3"
+mOsm/kg,mosm/kg,2,UCUM writes osmole in lower case
+mmHg,mm[Hg],2,UCUM writes mercury column as [Hg]
+"ml/min/1,73m2",mL/min/(173.10*-2.m2),2,"decimal comma, per 1.73 m2 body surface (eGFR)"
+"mL/min/1,73m2",mL/min/(173.10*-2.m2),2,"decimal comma, per 1.73 m2 body surface (eGFR)"
+109/L,,3,"needs interpretation: probably 10^9/L with the ^ lost, not stated in the source"
+1012/L,,3,"needs interpretation: probably 10^12/L with the ^ lost, not stated in the source"
+seg,,3,"needs interpretation: Spanish abbreviation (segundos?), not a unit code"
+Cèls/µL,,3,"needs interpretation: Catalan text (cells per microlitre?), not a unit code"
+*,,3,not a unit

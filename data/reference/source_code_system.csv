@@ -1,0 +1,32 @@
+source_site,ods_column,source_label,code_system
+hospital1,patient.sex_code,*,H1_SEX
+hospital1,patient.vital_status_code,*,H1_VITAL_STATUS
+hospital1,diagnosis.diagnosis_code,ICD-10-CM,ICD-10-CM
+hospital1,diagnosis.diagnosis_code,ICD-9-CM,ICD-9-CM
+hospital1,diagnosis.diagnosis_type_code,*,H1_DX_TYPE
+hospital1,drug.drug_code,*,ATC
+hospital1,drug.drug_local_code,*,H1_DRUG
+hospital1,drug.route_code,*,H1_ROUTE
+hospital1,drug.frequency_code,*,H1_FREQUENCY
+hospital1,lab_result.test_code,*,H1_LAB
+hospital1,lab_result.unit_code,*,H1_UNIT
+hospital1,lab_result.abnormal_flag_code,*,H1_LAB_FLAG
+hospital1,vitals.vital_code,*,Nebraska Lexicon
+hospital2,diagnosis.diagnosis_code,SNOMED CT,SNOMED CT
+hospital2,diagnosis.diagnosis_code,ICD-10-CM,ICD-10-CM
+hospital2,diagnosis.diagnosis_code,ICD-9-CM,ICD-9-CM
+hospital2,drug.drug_code,*,ATC
+hospital2,drug.route_code,*,H2_ROUTE
+hospital2,drug.frequency_code,*,H2_FREQUENCY
+hospital2,lab_result.test_code,*,LOINC
+hospital2,lab_result.unit_code,*,H2_UNIT
+hospital2,vitals.vital_code,*,H2_VITAL
+hospital3,diagnosis.diagnosis_code,ICD-10-CM,ICD-10-CM
+hospital3,diagnosis.diagnosis_code,ICD-9-CM,ICD-9-CM
+hospital3,drug.drug_code,*,SNOMED CT
+hospital3,drug.route_code,*,SNOMED CT
+hospital3,drug.frequency_code,*,SNOMED CT
+hospital3,lab_result.test_code,*,H3_LAB
+hospital3,lab_result.unit_code,*,H3_UNIT
+hospital3,lab_result.abnormal_flag_code,*,H3_LAB_FLAG
+hospital3,vitals.vital_code,*,SNOMED CT
